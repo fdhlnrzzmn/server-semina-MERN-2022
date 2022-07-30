@@ -4,7 +4,9 @@ const getAllOrders = async (req) => {
     const { limit = 10, page = 1, startDate, endDate } = req.query;
     let condition = {};
 
-    let match = {};
+    if (req.user.role !== 'owner') {
+        condition = {...condition, 'historyEvent.organizer': req.user.organizer};
+    };
 
     if (req.user.role !== 'owner') {
         match = { _id: req.user.organizer };
@@ -25,7 +27,6 @@ const getAllOrders = async (req) => {
     }
 
     const result = await Orders.find(condition)
-    .populate({path: 'event', match})
     .limit(limit)
     .skip(limit * (page - 1));
 
