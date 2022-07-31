@@ -1,6 +1,8 @@
 const { 
     signupParticipant,
+    activateParticipant,
  } = require('../../../services/mongoose/participants');
+
 const { StatusCodes } = require('http-status-codes');
 
 const signup = async (req, res, next) => {
@@ -15,6 +17,19 @@ const signup = async (req, res, next) => {
     }
 };
 
+const activeParticipant = async (req, res, next) => {
+    try {
+        const result = await activateParticipant(req);
+
+        res.status(StatusCodes.OK).json({
+            data:result,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 module.exports = {
     signup,
+    activeParticipant,
 };

@@ -36,10 +36,37 @@ const signupParticipant = async (req) => {
     await otpMail(email, result)
 
     delete result._doc.password;
+    delete result._doc.otp;
 
     return result;
 };
 
+const activateParticipant = async (req) => {
+    const { otp, email }  = req.body;
+    const check  = await Participant.findOne({
+        email,
+    });
+
+    if (!check) throw new NotFoundError('Pertisipan belum terdaftar');
+
+    if (check && check.otp !== otp) throw new BadRequestError('Kode OTP salah');
+
+    const result = await Participant.findByIdAndUpdate(check._id, {
+        status: 'aktif',
+    },
+    { new: true, runValidator: true });
+
+    delete result._doc.password;
+
+    return result;
+};
+
+const signinParticipant = async (req) => {
+    const { email, password } = req.body;
+    
+};
+
 module.exports = { 
     signupParticipant,
+    activateParticipant,
  };
