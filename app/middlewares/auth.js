@@ -50,9 +50,8 @@ const authenticateParticipant = async (req, res, next) => {
 
         req.user = {
             email: payload.email,
-            role: payload.role,
-            name: payload.name,
-            organizer: payload.organizer,
+            lastName: payload.lastName,
+            firstName: payload.firstName,
             id: payload.userId,
         };
         next();

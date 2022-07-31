@@ -4,7 +4,7 @@ const {
     NotFoundError,
     UnauthorizedError,
 } = require('../../errors');
-const { createTokenParticipant } = require('../../utils/createTokenUser');
+const { createTokenParticipant, createJWT } = require('../../utils');
 
 const { otpMail } = require('../mail');
 
