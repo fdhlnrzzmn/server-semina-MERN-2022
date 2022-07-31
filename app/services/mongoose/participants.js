@@ -4,6 +4,7 @@ const {
     NotFoundError,
     UnauthorizedError,
 } = require('../../errors');
+const { createTokenParticipant } = require('../../utils/createTokenUser');
 
 const { otpMail } = require('../mail');
 
@@ -63,10 +64,34 @@ const activateParticipant = async (req) => {
 
 const signinParticipant = async (req) => {
     const { email, password } = req.body;
-    
+
+    if (!email || !password) {
+        throw new BadRequestError('Email dan password harus diisi');
+    }
+
+    const result = await Participant.findOne({email: email});
+
+    if (!result) {
+        throw new UnauthorizedError('Invalid Credentials');
+    }
+
+    if (result.status === 'tidak aktif') {
+        throw new UnauthorizedError('Akun belum aktif');
+    }
+
+    const isPasswordCorrect = await result.comparePassword(password);
+
+    if (!isPasswordCorrect) {
+        throw new UnauthorizedError('Invalid Credentials');
+    }
+
+    const token = createJWT({ payload: createTokenParticipant(result)});
+
+    return token;
 };
 
 module.exports = { 
     signupParticipant,
     activateParticipant,
+    signinParticipant,
  };
