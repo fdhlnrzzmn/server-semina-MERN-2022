@@ -52,8 +52,34 @@ const getOnePayments = async (req) => {
     return result;
 };
 
+const updatePayments = async (req) => {
+    const { id } = req.params;
+    const { type, image } = req.body;
+
+    await checkingImage(image);
+
+    const check = await Payments.findOne({
+        type,
+        organizer: req.user.organizer,
+        _id: {$ne: id},
+    });
+
+    if (check) throw new BadRequestError('Tipe pembayaran duplikat');
+
+    const result = await Payments.findOneAndUpdate(
+        {_id: id},
+        {type, image, organizer: req.user.organizer},
+        {new: true, runValidators: true},
+    );
+
+    if (!result) throw new NotFoundError(`Tidak ada pembicara denga id : ${id}`);
+
+    return result;
+};
+
 module.exports = {
     getAllPayment,
     createPayment,
     getOnePayments,
+    updatePayments,
 };
