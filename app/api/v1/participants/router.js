@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express();
 
-const { signup, activeParticipant, signin, getAllLandingPage, getDetailLandingPage, getDashboard } = require('./controller');
+const { signup, activeParticipant, signin, getAllLandingPage, getDetailLandingPage, getDashboard, checkout } = require('./controller');
 
 const { authenticateParticipant } = require('../../../middlewares/auth');
 
@@ -10,5 +10,6 @@ router.post('/auth/signin', signin);
 router.put('/active', activeParticipant);
 router.get('/events', getAllLandingPage);
 router.get('/orders', authenticateParticipant, getDashboard);
+router.post('/checkout', authenticateParticipant, checkout);
 
 module.exports = router;
