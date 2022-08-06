@@ -3,7 +3,7 @@ const { checkingImage } = require('./images');
 
 const { NotFoundError, BadRequestError } = require('../../errors');
 
-const getAllPayment = async (req) => {
+const getAllPayments = async (req) => {
     let condition = { organizer: req.user.organizer };
 
     const result = await Payments.find(condition)
@@ -16,7 +16,7 @@ const getAllPayment = async (req) => {
     return result;
 };
 
-const createPayment = async (req) => {
+const createPayments = async (req) => {
     const { type, image } = req.body;
 
     await checkingImage(image);
@@ -72,14 +72,39 @@ const updatePayments = async (req) => {
         {new: true, runValidators: true},
     );
 
-    if (!result) throw new NotFoundError(`Tidak ada pembicara denga id : ${id}`);
+    if (!result) throw new NotFoundError(`Tidak ada pembayaran dengan id : ${id}`);
+
+    return result;
+};
+
+const deletePayments = async (req) => {
+    const { id } = req.params;
+
+    const result = await Payments.findOne({
+        _id: id,
+        organizer: req.user.organizer,
+    });
+
+    if (!result) throw new BadRequestError(`Tidak ada tipe pembayaran dengan id : ${id}`);
+
+    await result.remove();
+
+    return result;
+};
+
+const checkingPayments = async (id) => {
+    const result = await Payments.findOne({ _id: id });
+
+    if (!result) throw new NotFOundError(`Tidak ada tipe pembayaran dengan id : ${id}`);
 
     return result;
 };
 
 module.exports = {
-    getAllPayment,
-    createPayment,
+    getAllPayments,
+    createPayments,
     getOnePayments,
     updatePayments,
+    deletePayments,
+    checkingPayments,
 };
